@@ -75,38 +75,12 @@
 
   <div class="login-box">
     <h2>Login</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Login</button>
-      <div class="message" id="message"></div>
+    <form id="loginForm" action="login.php" method="POST">
+  <input type="text" name="username" placeholder="Username" required />
+  <input type="password" name="password" placeholder="Password" required />
+  <button type="submit">Login</button>
     </form>
   </div>
-
-  <!-- JavaScript for login -->
-  <script>
-    const validUser = "admin";
-    const validPass = "pass1234";
-
-    document.getElementById("loginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      const msg = document.getElementById("message");
-
-      if (user === validUser && pass === validPass) {
-        msg.style.color = "green";
-        msg.textContent = "Login successful!";
-        
-        setTimeout(() => {
-        window.location.href = "index.html";
-      }, 1000);
-    } else {
-      msg.style.color = "red";
-      msg.textContent = "Invalid username or password.";
-    }
-  });
-  </script>
 
 </body>
 </html>
