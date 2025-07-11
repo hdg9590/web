@@ -15,25 +15,31 @@ try {
     die("DB 연결 실패: " . $e->getMessage());
 }
 
-// 로그인 처리
+// 회원가입 정보 수신
 $username = $_POST["username"];
 $password = $_POST["password"];
 
-// 사용자 정보 확인
-$sql = "SELECT * FROM users WHERE username = :username AND password = :password";
+// 사용자 존재 여부 확인
+$sql = "SELECT * FROM users WHERE username = :username";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([
-    ':username' => $username,
-    ':password' => $password  // 실제 서비스에서는 해싱된 패스워드로 비교해야 안전함
-]);
+$stmt->execute([':username' => $username]);
 
 if ($stmt->rowCount() > 0) {
-    // 로그인 성공
-    header("Location: index.html");
+    // 이미 존재하는 사용자
+    echo "<script>alert('다른 이름을 입력해주세요.'); history.back();</script>";
     exit;
 } else {
-    // 실패
-    echo "<script>alert('Invalid username or password'); history.back();</script>";
+    // 사용자 등록
+    $sql_insert = "INSERT INTO users (username, password) VALUES (:username, :password)";
+    $stmt_insert = $pdo->prepare($sql_insert);
+    $stmt_insert->execute([
+        ':username' => $username,
+        ':password' => $password // 실제 서비스라면 반드시 해싱하세요
+    ]);
+
+    // 성공 메시지 출력
+    echo "<div style='color: green; font-weight: bold; text-align: center; margin-top: 50px;'>회원가입을 축하합니다!</div>";
     exit;
 }
 ?>
+
