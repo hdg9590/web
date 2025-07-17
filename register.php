@@ -37,13 +37,16 @@ if ($stmt->rowCount() > 0) {
         ':password' => $password // 실제 서비스라면 반드시 해싱하세요
     ]);
 
+    session_start();
+    $_SESSION['username'] = $username; 
+
     // 성공 메시지 출력 및 리다이렉트
     echo "<div style='color: green; font-weight: bold; text-align: center; margin-top: 50px;'>
         회원가입을 축하합니다!
       </div>
       <script>
         setTimeout(() => {
-          window.location.href = 'index.html';
+          window.location.href = 'reward.php';
         }, 1000);
       </script>";
 }
