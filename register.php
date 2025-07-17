@@ -37,6 +37,7 @@ if ($stmt->rowCount() > 0) {
         ':password' => $password // 실제 서비스라면 반드시 해싱하세요
     ]);
 
+    // 로그인 상태 저장
     session_start();
     $_SESSION['username'] = $username; 
 
@@ -46,7 +47,7 @@ if ($stmt->rowCount() > 0) {
       </div>
       <script>
         setTimeout(() => {
-          window.location.href = 'reward.php';
+          window.location.href = 'index.php';
         }, 1000);
       </script>";
 }
