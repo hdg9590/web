@@ -120,7 +120,7 @@ $beans_for_ui = $total_beans % 10;
          로그아웃되었습니다.
          <script>
            setTimeout(() => {
-            window.location.href = "index.html";
+            window.location.href = "index.php";
             }, 3000);
         </script>
       <?php endif; ?>
