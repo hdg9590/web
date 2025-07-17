@@ -110,7 +110,20 @@ $beans_for_ui = $total_beans % 10;
 
   <div class="card">
     <div class="user-info">
-      <?= htmlspecialchars($username) ?> 고객님 안녕하세요~<br>
+      <?php if ($username !== "비회원"): ?>
+      <?= htmlspecialchars($username) ?> 고객님 안녕하세요~
+      <form action="logout.php" method="post" style="display:inline;">
+        <button type="submit" style="margin-left: 10px;">로그아웃</button>
+      </form>
+      <br>
+      <?php else: ?>
+         로그아웃되었습니다.
+         <script>
+           setTimeout(() => {
+            window.location.href = "index.html";
+            }, 3000);
+        </script>
+      <?php endif; ?>
       누적 적립: <span id="beanCount"><?= $total_beans ?></span>개
     </div>
 
