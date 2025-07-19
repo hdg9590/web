@@ -2,51 +2,49 @@
 session_start();
 header('Content-Type: application/json');
 
-// 환경변수 불러오기
+// DB 연결
 $env = parse_ini_file(".env");
 $db_host = $env["DB_HOST"];
 $db_name = $env["DB_NAME"];
 $db_user = $env["DB_USER"];
 $db_pass = $env["DB_PASS"];
 
-try {
-    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($conn->connect_error) {
     echo json_encode(["success" => false, "message" => "DB 연결 실패"]);
     exit;
 }
 
-$username = $_SESSION["username"] ?? null;
-
+$username = $_SESSION['username'] ?? null;
 if (!$username) {
     echo json_encode(["success" => false, "message" => "로그인이 필요합니다."]);
     exit;
 }
 
-// 현재 bean 수 가져오기
-$stmt = $pdo->prepare("SELECT beans FROM users WHERE username = :username");
-$stmt->execute([':username' => $username]);
-$current = (int) $stmt->fetchColumn();
+// 현재 콩 수 조회
+$stmt = $conn->prepare("SELECT beans FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
-// bean 증가 또는 초기화
-if ($current_beans >= 10) {
-    $new_beans = 0;
+$beans = (int)$user['beans'];
+$reset = false;
+
+if ($beans >= 10) {
+    $beans = 0;
     $reset = true;
 } else {
-    $new_beans = $current_beans + 1;
-    $reset = false;
+    $beans++;
 }
 
-// 업데이트
-$update = $pdo->prepare("UPDATE users SET beans = :beans WHERE username = :username");
-$update->execute([
-    ':beans' => $new_beans,
-    ':username' => $username
-]);
+// DB 업데이트
+$update = $conn->prepare("UPDATE users SET beans = ? WHERE username = ?");
+$update->bind_param("is", $beans, $username);
+$update->execute();
 
 echo json_encode([
     "success" => true,
-    "total_beans" => $new_beans,
+    "total_beans" => $beans,
     "reset" => $reset
 ]);
