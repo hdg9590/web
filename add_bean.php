@@ -29,8 +29,14 @@ $stmt = $pdo->prepare("SELECT beans FROM users WHERE username = :username");
 $stmt->execute([':username' => $username]);
 $current = (int) $stmt->fetchColumn();
 
-// 무제한 누적
-$new_beans = $current + 1;
+// bean 증가 또는 초기화
+if ($current_beans >= 10) {
+    $new_beans = 0;
+    $reset = true;
+} else {
+    $new_beans = $current_beans + 1;
+    $reset = false;
+}
 
 // 업데이트
 $update = $pdo->prepare("UPDATE users SET beans = :beans WHERE username = :username");
@@ -39,4 +45,8 @@ $update->execute([
     ':username' => $username
 ]);
 
-echo json_encode(["success" => true, "total_beans" => $new_beans]);
+echo json_encode([
+    "success" => true,
+    "total_beans" => $new_beans,
+    "reset" => $reset
+]);
