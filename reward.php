@@ -1,198 +1,154 @@
 <?php
 session_start();
 
-// 환경변수 불러오기
+// DB 연결 (add_bean.php는 JSON 응답 전용이므로 직접 연결)
 $env = parse_ini_file(".env");
 $db_host = $env["DB_HOST"];
 $db_name = $env["DB_NAME"];
 $db_user = $env["DB_USER"];
 $db_pass = $env["DB_PASS"];
 
-try {
-    $pdo = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("DB 연결 실패: " . $e->getMessage());
+$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+if ($conn->connect_error) {
+    die("DB 연결 실패: " . $conn->connect_error);
 }
 
-$username = $_SESSION["username"] ?? "비회원";
+// 로그인 확인
+if (!isset($_SESSION['username'])) {
+    header("Location: register.html");
+    exit();
+}
 
-// DB에서 적립된 bean 개수 가져오기
-$stmt = $pdo->prepare("SELECT beans FROM users WHERE username = :username");
-$stmt->execute([':username' => $username]);
-$total_beans = (int) $stmt->fetchColumn();
+$username = $_SESSION['username'];
 
-// UI에는 10개까지만 표현
-$beans_for_ui = $total_beans % 10;
+// 사용자 정보 불러오기
+$stmt = $conn->prepare("SELECT beans FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$bean_count = (int)$user['beans'];
 ?>
 
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Reward</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f3f3f3;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <title>Reward</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f2f2f2;
+        }
 
-    .card {
-      background-color: white;
-      padding: 2rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      width: 420px;
-      text-align: center;
-    }
+        .container {
+            margin-top: 80px;
+        }
 
-    .user-info {
-      font-weight: bold;
-      margin-bottom: 1rem;
-      color: #2e7d32;
-    }
+        .bean-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
 
-    .circle-container {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
-      margin: 1rem 0;
-      justify-items: center;
-    }
+        .bean {
+            width: 60px;
+            height: 60px;
+        }
 
-    .circle {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background-color: #eee;
-      border: 2px solid #ccc;
-      position: relative;
-      overflow: hidden;
-    }
+        .btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
 
-    .circle.filled img {
-      width: 46px;
-      height: 39px;
-      object-fit: contain;
-      position: absolute;
-      top: 3px;
-      left: 0;
-    }
+        .btn:hover {
+            background-color: #16a085;
+        }
 
-    .get-button {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      font-weight: bold;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .message {
-      color: green;
-      font-weight: bold;
-      margin-top: 1rem;
-      display: none;
-    }
-
-    .message.show {
-      display: block;
-    }
-  </style>
+        #congratsMsg {
+            display: none;
+            font-size: 24px;
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="user-info">
-      <?php if ($username !== "비회원"): ?>
-      <?= htmlspecialchars($username) ?> 고객님 안녕하세요~
-      <form action="logout.php" method="post" style="display:inline;">
-        <button type="submit" style="margin-left: 10px;">로그아웃</button>
-      </form>
-      <br>
-      <?php else: ?>
-         로그아웃되었습니다.
-         <script>
-           setTimeout(() => {
-            window.location.href = "index.php";
-            }, 3000);
-        </script>
-      <?php endif; ?>
-      누적 적립: <span id="beanCount"><?= $total_beans ?></span>개
-    </div>
+<div class="container">
+    <h2>👤 <?= htmlspecialchars($username) ?>님의 적립카드</h2>
 
-    <button class="get-button" onclick="addBean()" id="getBtn">GET</button>
+    <!-- 콩 상태 영역 -->
+    <div class="bean-container" id="circleContainer"></div>
 
-    <div class="circle-container" id="circleContainer"></div>
+    <!-- 현재 콩 수 표시 -->
+    <div>현재 적립 개수: <span id="beanCount"><?= $bean_count ?></span>개</div>
 
-    <div class="message" id="congratsMsg">
-      축하합니다! 매장에서 아메리카노 한잔 무료 쿠폰을 받아가세요~
-    </div>
-  </div>
+    <!-- 축하 메시지 -->
+    <div id="congratsMsg">🎉 축하합니다! 무료 아메리카노 1잔 쿠폰을 매장에서 가져가세요~</div>
 
-  <script>
-    const total = 10;
-    let totalBeans = <?= $total_beans ?>;
-    let beansForUI = <?= $beans_for_ui ?>;
+    <!-- GET 버튼 -->
+    <button id="getBtn" class="btn">GET</button>
+</div>
 
-    const container = document.getElementById('circleContainer');
-    const countSpan = document.getElementById('beanCount');
-    const getBtn = document.getElementById('getBtn');
-    const congrats = document.getElementById('congratsMsg');
+<script>
+const total = 10;
+let totalBeans = <?= $bean_count ?>;
+const container = document.getElementById('circleContainer');
+const countSpan = document.getElementById('beanCount');
+const getBtn = document.getElementById('getBtn');
+const congrats = document.getElementById('congratsMsg');
 
-    function renderCircles() {
-      container.innerHTML = '';
-      for (let i = 0; i < total; i++) {
+function renderCircles() {
+    container.innerHTML = '';
+    for (let i = 0; i < total; i++) {
         const div = document.createElement('div');
-        div.classList.add('circle');
-        if (i < beansForUI) {
-          div.classList.add('filled');
-          const img = document.createElement('img');
-          img.src = "assets/img/bean.png";
-          div.appendChild(img);
-        }
+        const img = document.createElement('img');
+        img.className = 'bean';
+        img.src = (i < totalBeans) ? 'assets/img/bean.png' : 'assets/img/empty_bean.png';
+        div.appendChild(img);
         container.appendChild(div);
-      }
-
-      if (beansForUI === 0 && totalBeans > 0 && totalBeans % 10 === 0) {
-        congrats.classList.add("show");
-
-        setTimeout(() => {
-          congrats.classList.remove("show");
-        }, 3000);
-      }
     }
+}
 
-    function addBean() {
-      fetch("add_bean.php", {
-        method: "POST",
-        credentials: "include"
-      })
-      .then(res => res.json())
-      .then(data => {
+function addBean() {
+    fetch('add_bean.php', {
+        method: 'POST',
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
         if (data.success) {
-          totalBeans = data.total_beans;
-          beansForUI = totalBeans % 10;
-          countSpan.textContent = totalBeans;
-          renderCircles();
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("에러가 발생했습니다.");
-      });
-    }
+            totalBeans = data.total_beans;
+            countSpan.textContent = totalBeans;
+            renderCircles();
 
-    renderCircles();
-  </script>
+            if (data.reset) {
+                congrats.style.display = 'block';
+                setTimeout(() => {
+                    congrats.style.display = 'none';
+                }, 3000);
+            }
+        } else {
+            alert(data.message || '처리에 실패했습니다.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('서버 오류 발생');
+    });
+}
+
+renderCircles();
+getBtn.addEventListener('click', addBean);
+</script>
 
 </body>
 </html>
