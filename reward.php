@@ -15,7 +15,7 @@ if ($conn->connect_error) {
 
 // 로그인 확인
 if (!isset($_SESSION['username'])) {
-    header("Location: register.html");
+    header("Location: index.php");
     exit();
 }
 
