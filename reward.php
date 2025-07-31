@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// DB 연결 (add_bean.php는 JSON 응답 전용이므로 직접 연결)
+// DB 연결
 $env = parse_ini_file(".env");
 $db_host = $env["DB_HOST"];
 $db_name = $env["DB_NAME"];
@@ -78,17 +78,21 @@ $bean_count = (int)$user['beans'];
             color: green;
             margin-top: 10px;
         }
+
+        .header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <!-- 사용자 이름 + 로그아웃 버튼 -->
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-        <h2 style="margin: 0;">👤 <?= htmlspecialchars($username) ?>님의 적립카드</h2>
-        <form method="POST" action="logout.php" style="margin-left: 10px;">
-            <button class="btn">로그아웃</button>
-        </form>
+    <div class="header-flex">
+        <h2 id="userTitle" style="margin: 0;">👤 <?= htmlspecialchars($username) ?>님의 적립카드</h2>
+        <button onclick="logoutWithMessage()" class="btn" style="margin-left: 10px;">로그아웃</button>
     </div>
 
     <!-- 콩 상태 영역 -->
@@ -150,6 +154,16 @@ function addBean() {
         console.error(err);
         alert('서버 오류 발생');
     });
+}
+
+function logoutWithMessage() {
+    const title = document.getElementById("userTitle");
+    title.textContent = "로그아웃되었습니다.";
+    const button = document.querySelector("button");
+    button.disabled = true;
+    setTimeout(() => {
+        window.location.href = "logout.php";
+    }, 3000);
 }
 
 renderCircles();
