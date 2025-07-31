@@ -83,19 +83,25 @@ $bean_count = (int)$user['beans'];
 <body>
 
 <div class="container">
-    <h2>👤 <?= htmlspecialchars($username) ?>님의 적립카드</h2>
+    <!-- 사용자 이름 + 로그아웃 버튼 -->
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 style="margin: 0;">👤 <?= htmlspecialchars($username) ?>님의 적립카드</h2>
+        <form method="POST" action="logout.php" style="margin-left: 10px;">
+            <button class="btn">로그아웃</button>
+        </form>
+    </div>
 
     <!-- 콩 상태 영역 -->
-    <div class="bean-container" id="circleContainer"></div>
+    <div class="bean-container" id="circleContainer" style="margin-top: 20px;"></div>
 
     <!-- 현재 콩 수 표시 -->
-    <div>현재 적립 개수: <span id="beanCount"><?= $bean_count ?></span>개</div>
+    <div style="margin-top: 10px;">현재 적립 개수: <span id="beanCount"><?= $bean_count ?></span>개</div>
 
     <!-- 축하 메시지 -->
-    <div id="congratsMsg">🎉 축하합니다! 무료 아메리카노 1잔 쿠폰을 매장에서 가져가세요~</div>
+    <div id="congratsMsg" style="margin-top: 10px;">🎉 축하합니다! 무료 아메리카노 1잔 쿠폰을 매장에서 가져가세요~</div>
 
     <!-- GET 버튼 -->
-    <button id="getBtn" class="btn">GET</button>
+    <button id="getBtn" class="btn" style="margin-top: 10px;">GET</button>
 </div>
 
 <script>
