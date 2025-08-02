@@ -113,7 +113,8 @@ $coupon_count = (int)$user['coupon'];
 const total = 10;
 let totalBeans = <?= $bean_count ?>;
 const container = document.getElementById('circleContainer');
-const countSpan = document.getElementById('beanCount');
+const beanCountSpan = document.getElementById('beanCount');
+const couponCountSpan = document.getElementById('couponCount');
 const getBtn = document.getElementById('getBtn');
 const congrats = document.getElementById('congratsMsg');
 
@@ -138,7 +139,8 @@ function addBean() {
     .then(data => {
         if (data.success) {
             totalBeans = data.total_beans;
-            countSpan.textContent = totalBeans;
+            beanCountSpan.textContent = totalBeans;
+            couponCountSpan.textContent = data.coupon;  
             renderCircles();
 
             if (data.reset) {
@@ -173,4 +175,5 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
 
