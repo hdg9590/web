@@ -23,7 +23,7 @@ if (!$username) {
 }
 
 // 현재 콩 수 조회
-$stmt = $conn->prepare("SELECT beans FROM users WHERE username = ?");
+$stmt = $conn->prepare("SELECT beans,coupon FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -54,4 +54,5 @@ echo json_encode([
     "coupon" => $coupon,
     "reset" => $reset
 ]);
+
 
