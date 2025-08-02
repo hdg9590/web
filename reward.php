@@ -28,6 +28,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $bean_count = (int)$user['beans'];
+$coupon_count = (int)$user['coupon'];
 ?>
 
 <!DOCTYPE html>
@@ -100,9 +101,9 @@ $bean_count = (int)$user['beans'];
 
     <!-- 현재 콩 수 표시 -->
     <div style="margin-top: 10px;">현재 적립 개수: <span id="beanCount"><?= $bean_count ?></span>개</div>
-
-    <!-- 축하 메시지 -->
-    <div id="congratsMsg" style="margin-top: 10px;">🎉 축하합니다! 무료 아메리카노 1잔 쿠폰을 매장에서 가져가세요~</div>
+    
+    <!-- 현재 쿠폰 수 표시 -->
+    <div style="margin-top: 10px;">아메리카노 1잔 무료 쿠폰: <span id="couponCount"><?= $coupon_count ?></span>개</div>
 
     <!-- GET 버튼 -->
     <button id="getBtn" class="btn" style="margin-top: 10px;">GET</button>
@@ -172,3 +173,4 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
