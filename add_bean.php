@@ -15,6 +15,7 @@ if ($conn->connect_error) {
     exit;
 }
 
+// 로그인 확인
 $username = $_SESSION['username'] ?? null;
 if (!$username) {
     echo json_encode(["success" => false, "message" => "로그인이 필요합니다."]);
@@ -29,22 +30,28 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
 $beans = (int)$user['beans'];
+$coupon = (int)$user['coupon'];
 $reset = false;
+
+$beans++;
 
 if ($beans >= 10) {
     $beans = 0;
+    $coupon++;
     $reset = true;
 } else {
     $beans++;
 }
 
 // DB 업데이트
-$update = $conn->prepare("UPDATE users SET beans = ? WHERE username = ?");
-$update->bind_param("is", $beans, $username);
+$update = $conn->prepare("UPDATE users SET beans = ?, coupon = ? WHERE username = ?");
+$update->bind_param("iis", $beans,$coupon,$username);
 $update->execute();
 
 echo json_encode([
     "success" => true,
     "total_beans" => $beans,
+    "coupon" => $coupon,
     "reset" => $reset
 ]);
+
