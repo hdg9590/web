@@ -32,9 +32,12 @@ if ($stmt->rowCount() > 0) {
     // 사용자 등록
     $sql_insert = "INSERT INTO users (username, password) VALUES (:username, :password)";
     $stmt_insert = $pdo->prepare($sql_insert);
+    
+    $hashed = password_hash($password, PASSWORD_DEFAULT);
+    
     $stmt_insert->execute([
         ':username' => $username,
-        ':password' => $password // 실제 서비스라면 반드시 해싱하세요
+        ':password' => $hashed  // 실제 서비스라면 반드시 해싱하세요
     ]);
 
     // 로그인 상태 저장
@@ -52,5 +55,6 @@ if ($stmt->rowCount() > 0) {
       </script>";
 }
 ?>
+
 
 
