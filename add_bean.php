@@ -1,3 +1,7 @@
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(0);
+
 <?php
 session_start();
 header('Content-Type: application/json');
@@ -52,6 +56,7 @@ echo json_encode([
     "coupon" => $coupon,
     "reset" => $reset
 ]);
+
 
 
 
