@@ -131,33 +131,47 @@ function renderCircles() {
 }
 
 function addBean() {
+    getBtn.disabled = true;
+    
     fetch('add_bean.php', {
         method: 'POST',
         credentials: 'include'
     })
-    .then(res => res.json())
+   .then(res => res.json())
+   .then(data => {
+        getBtn.disabled = false;
+   .then(res => {
+    if (!res.ok) {
+        throw new Error("HTTP 오류: " + res.status);
+    }
+    return res.json();
+    })
     .then(data => {
-        if (data.success) {
-            totalBeans = data.total_beans;
-            beanCountSpan.textContent = totalBeans;
-            couponCountSpan.textContent = data.coupon;  
-            renderCircles();
+    console.log("서버 응답:", data); 
 
-            if (data.reset) {
-                congrats.style.display = 'block';
-                setTimeout(() => {
-                    congrats.style.display = 'none';
-                }, 3000);
-            }
-        } else {
-            alert(data.message || '처리에 실패했습니다.');
+    if (data.success) {
+        totalBeans = data.total_beans;
+        beanCountSpan.textContent = totalBeans;
+        couponCountSpan.textContent = data.coupon;
+        renderCircles();
+
+    if (data.reset) {
+        congrats.style.display = 'block';
+        setTimeout(() => {
+        congrats.style.display = 'none';
+        }, 3000);
         }
+    } else {
+        alert(data.message || '처리에 실패했습니다.');
+    }
     })
     .catch(err => {
-        console.error(err);
+        console.error("에러 발생:", err);
         alert('서버 오류 발생');
     });
-}
+    .finally(() => {
+        getBtn.disabled = false; // 응답 완료 후 버튼 다시 활성화
+    });
 
 function logoutWithMessage() {
     const title = document.getElementById("userTitle");
@@ -175,6 +189,7 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
 
 
 
