@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $user = $result->fetch_assoc();
 
         // 비밀번호 검증
-        if (password_verify($password, $user["password"])) {
+        if ($password === $user["password"]) {
             $_SESSION["user_id"] = $user["id"];
             $_SESSION["username"] = $user["username"];
             header("Location: index.php");
