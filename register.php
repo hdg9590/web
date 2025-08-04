@@ -37,7 +37,7 @@ if ($stmt->rowCount() > 0) {
     
     $stmt_insert->execute([
         ':username' => $username,
-        ':password' => $hashed  // 실제 서비스라면 반드시 해싱하세요
+        ':password' => $hashed  
     ]);
 
     // 로그인 상태 저장
@@ -55,6 +55,7 @@ if ($stmt->rowCount() > 0) {
       </script>";
 }
 ?>
+
 
 
 
