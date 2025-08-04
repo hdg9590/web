@@ -1,5 +1,6 @@
 <?php
 
+// DB 연결
 $env = parse_ini_file(".env");
 $db_host = $env["DB_HOST"];
 $db_name = $env["DB_NAME"];
@@ -14,4 +15,5 @@ if ($conn->connect_error) {
 
 // 문자셋 설정 (한글 깨짐 방지)
 $conn->set_charset("utf8");
+
 ?>
