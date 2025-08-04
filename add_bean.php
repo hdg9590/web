@@ -39,8 +39,6 @@ if ($beans >= 10) {
     $beans = 0;
     $coupon++;
     $reset = true;
-} else {
-    $beans++;
 }
 
 // DB 업데이트
@@ -54,5 +52,6 @@ echo json_encode([
     "coupon" => $coupon,
     "reset" => $reset
 ]);
+
 
 
