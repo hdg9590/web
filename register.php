@@ -48,8 +48,9 @@ if ($stmt->rowCount() > 0) {
       <script>
         setTimeout(() => {
           window.location.href = 'index.php';
-        }, 1000);
+        }, 3000);
       </script>";
 }
 ?>
+
 
