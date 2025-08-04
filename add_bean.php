@@ -50,12 +50,20 @@ $update = $conn->prepare("UPDATE users SET beans = ?, coupon = ? WHERE username 
 $update->bind_param("iis", $beans,$coupon,$username);
 $update->execute();
 
-echo json_encode([
-    "success" => true,
-    "total_beans" => $beans,
-    "coupon" => $coupon,
-    "reset" => $reset
-]);
+header('Content-Type: application/json');
+
+try {
+    echo json_encode([
+        "success" => true,
+        "total_beans" => $beans,
+        "coupon" => $coupon,
+        "reset" => $reset
+    ]);
+} catch (Exception $e) {
+    echo json_encode(["success" => false, "message" => "응답 생성 중 오류 발생"]);
+}
+
+
 
 
 
