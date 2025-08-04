@@ -22,7 +22,7 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 // 사용자 정보 불러오기
-$stmt = $conn->prepare("SELECT beans FROM users WHERE username = ?");
+$stmt = $conn->prepare("SELECT beans,coupon FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -175,5 +175,6 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
 
 
