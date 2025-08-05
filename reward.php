@@ -73,13 +73,6 @@ $coupon_count = (int)$user['coupon'];
             background-color: #16a085;
         }
 
-        #congratsMsg {
-            display: none;
-            font-size: 24px;
-            color: green;
-            margin-top: 10px;
-        }
-
         .header-flex {
             display: flex;
             align-items: center;
@@ -116,7 +109,7 @@ const container = document.getElementById('circleContainer');
 const beanCountSpan = document.getElementById('beanCount');
 const couponCountSpan = document.getElementById('couponCount');
 const getBtn = document.getElementById('getBtn');
-const congrats = document.getElementById('congratsMsg');
+
 
 function renderCircles() {
     container.innerHTML = '';
@@ -152,12 +145,6 @@ function addBean() {
             couponCountSpan.textContent = data.coupon;
             renderCircles();
 
-            if (data.reset) {
-                congrats.style.display = 'block';
-                setTimeout(() => {
-                    congrats.style.display = 'none';
-                }, 3000);
-            }
         } else {
             alert(data.message || '처리에 실패했습니다.');
         }
@@ -188,6 +175,7 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
 
 
 
