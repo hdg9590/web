@@ -1,8 +1,8 @@
-ini_set('display_errors', 0);
-ini_set('display_startup_errors', 0);
-error_reporting(0);
-
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 header('Content-Type: application/json');
 
@@ -50,18 +50,14 @@ $update = $conn->prepare("UPDATE users SET beans = ?, coupon = ? WHERE username 
 $update->bind_param("iis", $beans,$coupon,$username);
 $update->execute();
 
-header('Content-Type: application/json');
+echo json_encode([
+    "success" => true,
+    "total_beans" => $beans,
+    "coupon" => $coupon,
+    "reset" => $reset
+]);
 
-try {
-    echo json_encode([
-        "success" => true,
-        "total_beans" => $beans,
-        "coupon" => $coupon,
-        "reset" => $reset
-    ]);
-} catch (Exception $e) {
-    echo json_encode(["success" => false, "message" => "응답 생성 중 오류 발생"]);
-}
+
 
 
 
