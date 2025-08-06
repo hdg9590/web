@@ -2,6 +2,17 @@
 session_start();
 header('Content-Type: application/json');
 
+// CORS 설정 추가
+header("Access-Control-Allow-Origin: http://dadacoffee.store"); // 또는 * (보안 상 실제 도메인 권장)
+header("Access-Control-Allow-Credentials: true");
+header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
+
+// OPTIONS 요청에 대한 응답 (Preflight 처리)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 // DB 연결
 $env = parse_ini_file(".env");
 $db_host = $env["DB_HOST"];
@@ -52,6 +63,7 @@ echo json_encode([
     "coupon" => $coupon,
     "reset" => $reset
 ]);
+
 
 
 
