@@ -3,7 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 // CORS 설정 추가
-header("Access-Control-Allow-Origin: http://dadacoffee.store"); // 또는 * (보안 상 실제 도메인 권장)
+header("Access-Control-Allow-Origin: http://dadacoffee.store"); 
 header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
 
@@ -63,6 +63,7 @@ echo json_encode([
     "coupon" => $coupon,
     "reset" => $reset
 ]);
+
 
 
 
