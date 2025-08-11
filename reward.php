@@ -138,8 +138,7 @@ async function addBean() {
             couponCountSpan.textContent = data.coupon;
             beanCountSpan.textContent = totalBeans;
             renderCircles();
-            }
-        } else {
+         }else {
             alert(data.message || '처리에 실패했습니다.');
         }
     } catch (err) {
@@ -165,6 +164,7 @@ getBtn.addEventListener('click', addBean);
 
 </body>
 </html>
+
 
 
 
