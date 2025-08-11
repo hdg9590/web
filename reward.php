@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "db.php";
 
 // 로그인 확인
 if (!isset($_SESSION['username'])) {
@@ -8,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-require_once "db.php";
+
 // 사용자 정보 불러오기
 $stmt = $conn->prepare("SELECT beans,coupon FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
@@ -92,7 +93,6 @@ $coupon_count = (int)$user['coupon'];
 
 <script>
 const total = 10;
-const total = 10;
 let totalBeans = <?= $bean_count ?>;
 const container = document.getElementById('circleContainer');
 const beanCountSpan = document.getElementById('beanCount');
@@ -138,8 +138,6 @@ async function addBean() {
             couponCountSpan.textContent = data.coupon;
             beanCountSpan.textContent = totalBeans;
             renderCircles();
-            if (data.reset) {
-                alert('콩 10개 적립! 쿠폰이 발행되었습니다!');
             }
         } else {
             alert(data.message || '처리에 실패했습니다.');
@@ -161,15 +159,13 @@ function logoutWithMessage() {
         window.location.href = "logout.php";
     }, 3000);
 }
-
-getBtn.addEventListener('click', addBean);
-
 renderCircles();
-
+getBtn.addEventListener('click', addBean);
 </script>
 
 </body>
 </html>
+
 
 
 
