@@ -92,14 +92,13 @@ $coupon_count = (int)$user['coupon'];
 
 <script>
 const total = 10;
+const total = 10;
 let totalBeans = <?= $bean_count ?>;
 const container = document.getElementById('circleContainer');
 const beanCountSpan = document.getElementById('beanCount');
 const couponCountSpan = document.getElementById('couponCount');
 const getBtn = document.getElementById('getBtn');
 
-const username = "<?= htmlspecialchars($username) ?>";
-    
 function renderCircles() {
     container.innerHTML = '';
     for (let i = 0; i < total; i++) {
@@ -112,43 +111,15 @@ function renderCircles() {
     }
 }
 
-// 사용자 정보(beans, coupon) API 호출해서 초기화
-async function fetchUserInfo() {
-    try {
-        // API Gateway URL
-        const apiUrl = 'https://tqm6pyqml9.execute-api.ap-northeast-1.amazonaws.com/prod/user_info?username=' + encodeURIComponent(username);
-
-        const res = await fetch(apiUrl, {
-            method: 'GET',
-            // credentials: 'include', // 세션 쿠키가 있으면 사용
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!res.ok) throw new Error('네트워크 오류: ' + res.status);
-        const data = await res.json();
-
-        if (data.success) {
-            totalBeans = data.beans;
-            couponCountSpan.textContent = data.coupon;
-            beanCountSpan.textContent = totalBeans;
-            renderCircles();
-        } else {
-            alert(data.message || '사용자 정보 조회 실패');
-        }
-    } catch (err) {
-        console.error(err);
-        alert('서버 오류 발생');
-    }
-}
-
 async function addBean() {
     getBtn.disabled = true;
 
     try {
-        // API Gateway URL
         const apiUrl = 'https://tqm6pyqml9.execute-api.ap-northeast-1.amazonaws.com/prod/add_bean';
+
+        // username은 PHP 세션으로 유지 중이므로 API에 따로 보내지 않는 경우
+        // 람다에서 username을 보내는 방식
+        const username = "<?= htmlspecialchars($username) ?>";
 
         const res = await fetch(apiUrl, {
             method: 'POST',
@@ -156,7 +127,6 @@ async function addBean() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ username }),
-            // credentials: 'include', // 세션 쿠키가 있으면 사용
         });
 
         if (!res.ok) throw new Error('네트워크 오류: ' + res.status);
@@ -194,12 +164,13 @@ function logoutWithMessage() {
 
 getBtn.addEventListener('click', addBean);
 
-fetchUserInfo();  // 페이지 로드 시 사용자 정보 초기화
+renderCircles();
 
 </script>
 
 </body>
 </html>
+
 
 
 
