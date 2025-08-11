@@ -8,7 +8,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-
+require_once "db.php";
 // 사용자 정보 불러오기
 $stmt = $conn->prepare("SELECT beans,coupon FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
@@ -170,6 +170,7 @@ renderCircles();
 
 </body>
 </html>
+
 
 
 
